@@ -7,12 +7,56 @@ const productSchema = new mongoose.Schema({
         cn: helper.productNameObj,
         jpn: helper.productNameObj,
     },
+<<<<<<< HEAD
     category: {
         en: helper.categoryObj,
         cn: helper.categoryObj,
         jpn: helper.categoryObj,
     },
     gender: {
+=======
+  ],
+  feature: {
+    en: helper.featureObj,
+    cn: helper.featureObj,
+    jpn: helper.featureObj,
+  },
+  description: {
+    en: helper.descriptionObj,
+    cn: helper.descriptionObj,
+    jpn: helper.descriptionObj,
+  },
+  style: {
+    en: helper.styleObject,
+    cn: helper.styleObject,
+    jpn: helper.styleObject,
+  },
+
+  price: {
+    hkd: helper.priceObject,
+    jpn: helper.priceObject,
+  },
+  ratings: {
+    type: Number,
+    default: 0,
+  },
+  material: {
+    type: String,
+    trim: true,
+  },
+  washing_care: {
+    type: String,
+    trim: true,
+  },
+  discount: {
+    hkd: helper.discountObject,
+    jpn: helper.discountObject,
+  },
+
+  size: [
+    {
+      sizeType: {
+>>>>>>> 80770e6 (added image upload in both front and backend, and refactored the create and edit product screen)
         type: String,
         required: true,
 <<<<<<< HEAD
