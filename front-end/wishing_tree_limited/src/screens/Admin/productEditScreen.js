@@ -55,15 +55,13 @@ const ProductEditScreen = ({ match, history }) => {
   const [stock, setStock] = useState([])
   //
   const [newColor, setNewColor] = useState(langInit)
-  const [newColorHex, setNewColorHex] = useState('')
+  const [newColorHex, setNewColorHex] = useState('#ffffff')
   const [newStock, setNewStock] = useState('')
   const [newSizeType, setNewSizeType] = useState('')
 
   const [sizes, setSizes] = useState([])
 
   // file input state
-  const [fileInputState, setFileInputState] = useState('')
-  const [selectedFile, setSelectedFile] = useState('')
   const [previewSource, setPreviewSource] = useState([])
 
   // product Details Reducers
@@ -130,10 +128,10 @@ const ProductEditScreen = ({ match, history }) => {
         setCategoryObj(product.category)
         setGender(product.gender)
         setImages(product.image ? product.image : [])
-        setFeatureObj(product.feature ? product.feature : langInit)
-        setDescriptionObj(product.description ? product.description : langInit)
-        setStyleObj(product.style ? product.style : langInit)
-        setPriceObj(product.price ? product.price : currencyInit)
+        setFeatureObj(product.feature ? product.feature : {})
+        setDescriptionObj(product.description ? product.description : {})
+        setStyleObj(product.style ? product.style : {})
+        setPriceObj(product.price ? product.price : {})
         setMaterial(product.material ? product.material : '')
         setWashing_care(product.washing_care ? product.washing_care : '')
         setDiscount(product.discount ? product.discount : '')
@@ -145,7 +143,7 @@ const ProductEditScreen = ({ match, history }) => {
         dispatch({ type: EDIT_PRODUCT_RESET })
       }, 1200)
     }
-  }, [dispatch, history, match, productId, product, success])
+  }, [dispatch, history, match, productId, product, success, userInfo])
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -254,7 +252,6 @@ const ProductEditScreen = ({ match, history }) => {
     const newImages = [...images]
     newImages.push(file)
     setImages(newImages)
-    setSelectedFile(file)
     previewFile(file)
   }
   const previewFile = (file) => {
@@ -313,7 +310,7 @@ const ProductEditScreen = ({ match, history }) => {
                   value={nameObj.jpn}
                   placeholder="Product Name in Japanese"
                   onChange={(e) =>
-                    setCategoryObj({ ...nameObj, jpn: e.target.value })
+                    setNameObj({ ...nameObj, jpn: e.target.value })
                   }
                 />
               </InputGroup>
@@ -371,7 +368,6 @@ const ProductEditScreen = ({ match, history }) => {
               <Form.Control
                 type="file"
                 onChange={handleFileInputChange}
-                value={fileInputState}
                 multiple
               />
             </Form.Group>
@@ -665,7 +661,7 @@ const ProductEditScreen = ({ match, history }) => {
                           className="btn-sm"
                           variant="danger"
                           onClick={() => {
-                            setColors(colors.filter((_, index) => i != index))
+                            setColors(colors.filter((_, index) => i !== index))
                             setColorsHex(
                               colorsHex.filter((_, index) => i !== index),
                             )
