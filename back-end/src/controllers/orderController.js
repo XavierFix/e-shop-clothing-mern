@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const { Order } = require("../models/orders");
 const { User } = require("../models/user");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -239,61 +240,83 @@ const { User } = require('../models/user')
 const { Order } = require("../models/orders");
 const { User } = require("../models/user");
 >>>>>>> 83e089f (added order list for admin, refactored search component and header  and added reducers, need to finish the filter function)
+=======
+const { Order } = require('../models/orders')
+const { User } = require('../models/user')
+>>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
 
 module.exports = {
-    async addOrderItems(req, res) {
-        const { cart } = req.body;
-        const {
-            user,
-            orderItems,
-            shippingAddress,
-            paymentMethod,
-            shippingCost,
-            tax,
-            totalPrice,
-            itemsPrice,
-        } = cart;
+  async addOrderItems(req, res) {
+    const { cart } = req.body
+    const {
+      user,
+      orderItems,
+      shippingAddress,
+      paymentMethod,
+      shippingCost,
+      tax,
+      totalPrice,
+      itemsPrice,
+    } = cart
 
-        try {
-            if (!orderItems && orderItems.length === 0) {
-                throw new Error("No order items");
-            }
-            if (
-                !user ||
-                !user.email ||
-                !user.contactNum ||
-                !user.name ||
-                !user.surname
-            ) {
-                throw new Error("User Information is incomplete");
-            }
+    try {
+      if (!orderItems && orderItems.length === 0) {
+        throw new Error('No order items')
+      }
+      if (
+        !user ||
+        !user.email ||
+        !user.contactNum ||
+        !user.name ||
+        !user.surname
+      ) {
+        throw new Error('User Information is incomplete')
+      }
 
-            if (!shippingAddress) {
-                throw new Error("Shipping address is required");
-            }
+      if (!shippingAddress) {
+        throw new Error('Shipping address is required')
+      }
 
-            if (
-                !paymentMethod ||
-                !shippingCost ||
-                !tax ||
-                !totalPrice ||
-                !itemsPrice
-            ) {
-                throw new Error(
-                    "Some shipping information such as payment methods, shipping fees are missing"
-                );
-            }
+      if (
+        !paymentMethod ||
+        !shippingCost ||
+        !tax ||
+        !totalPrice ||
+        !itemsPrice
+      ) {
+        throw new Error(
+          'Some shipping information such as payment methods, shipping fees are missing',
+        )
+      }
 
-            const order = new Order(cart);
+      const order = new Order(cart)
 
-            const createdOrder = await Order.create(order);
+      const createdOrder = await Order.create(order)
 
-            // Now add the order to user
-            const foundUser = await User.findById(user.userId);
-            foundUser.orders = foundUser.orders.concat(createdOrder._id);
+      const foundUser = await User.findById(user.userId)
+      // Add the order to user
+      foundUser.orders = foundUser.orders.concat(createdOrder._id)
+      // Remove CartItems
+      foundUser.cart = []
+      await foundUser.save()
 
-            await foundUser.save();
+      // send the created orders
+      res.status(201).send(createdOrder)
+    } catch (error) {
+      res.status(400).send({ message: error.message })
+    }
+  },
+  async getOrder(req, res) {
+    const orderId = req.params.id
+    try {
+      const order = await Order.findById(orderId)
+      res.send(order)
+    } catch (error) {
+      res.status(404).send({ message: error.message })
+    }
+  },
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 >>>>>>> 23f74ae (refactored product edit and create screen)
@@ -318,10 +341,13 @@ module.exports = {
 >>>>>>> 095a905 (added paypal support and refactor the backend and frontend)
 =======
 
+=======
+>>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
   async deleteOrder(req, res) {
     const orderId = req.params.id
     try {
       const order = await Order.findById(orderId)
+<<<<<<< HEAD
       await order.remove()
       res.status(200).send('Successfully deleted order')
     } catch (error) {
@@ -354,18 +380,17 @@ module.exports = {
             res.status(404).send({ message: error.message });
         }
     },
+=======
+>>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
 
-    async deleteOrder(req, res) {
-        const orderId = req.params.id;
-        try {
-            const order = await Order.findById(orderId);
+      const user = await User.findById(order.user.userId)
 
-            const user = await User.findById(order.user.userId);
+      const orders = user.orders.filter((item) => item.toString() !== orderId)
 
-            const orders = user.orders.filter(
-                (item) => item.toString() !== orderId
-            );
+      user.orders = orders
+      await user.save()
 
+<<<<<<< HEAD
             user.orders = orders;
             await user.save();
 
@@ -405,3 +430,40 @@ module.exports = {
     },
 };
 >>>>>>> 83e089f (added order list for admin, refactored search component and header  and added reducers, need to finish the filter function)
+=======
+      await order.remove()
+      res.status(200).send('Successfully deleted order')
+    } catch (error) {
+      res.status(400).send({ message: error.message })
+    }
+  },
+  async getAllOrders(req, res) {
+    try {
+      const orders = await Order.find({})
+        .populate('user', 'id name')
+        .sort({ createdAt: -1 })
+        .limit(12)
+      res.status(200).send(orders)
+    } catch (error) {
+      res.status(404).send({ message: error.message })
+    }
+  },
+  async updateOrderToDelivered(req, res) {
+    const orderId = req.params.id
+    try {
+      const order = await Order.findById(orderId)
+      if (order.isDelivered === true) {
+        order.isDelivered = false
+        order.deliveredAt = null
+      } else {
+        order.isDelivered = true
+        order.deliveredAt = Date.now()
+      }
+      const updatedOrder = await order.save()
+      res.send(updatedOrder)
+    } catch (error) {
+      res.status(400).send({ message: error.message })
+    }
+  },
+}
+>>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
