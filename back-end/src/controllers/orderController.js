@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 const { Order } = require("../models/orders");
 const { User } = require("../models/user");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -244,78 +245,83 @@ const { User } = require("../models/user");
 const { Order } = require('../models/orders')
 const { User } = require('../models/user')
 >>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
+=======
+const { Order } = require("../models/orders");
+const { User } = require("../models/user");
+>>>>>>> d421cc7 (added search functionalities for admin actions)
 
 module.exports = {
-  async addOrderItems(req, res) {
-    const { cart } = req.body
-    const {
-      user,
-      orderItems,
-      shippingAddress,
-      paymentMethod,
-      shippingCost,
-      tax,
-      totalPrice,
-      itemsPrice,
-    } = cart
+    async addOrderItems(req, res) {
+        const { cart } = req.body;
+        const {
+            user,
+            orderItems,
+            shippingAddress,
+            paymentMethod,
+            shippingCost,
+            tax,
+            totalPrice,
+            itemsPrice,
+        } = cart;
 
-    try {
-      if (!orderItems && orderItems.length === 0) {
-        throw new Error('No order items')
-      }
-      if (
-        !user ||
-        !user.email ||
-        !user.contactNum ||
-        !user.name ||
-        !user.surname
-      ) {
-        throw new Error('User Information is incomplete')
-      }
+        try {
+            if (!orderItems && orderItems.length === 0) {
+                throw new Error("No order items");
+            }
+            if (
+                !user ||
+                !user.email ||
+                !user.contactNum ||
+                !user.name ||
+                !user.surname
+            ) {
+                throw new Error("User Information is incomplete");
+            }
 
-      if (!shippingAddress) {
-        throw new Error('Shipping address is required')
-      }
+            if (!shippingAddress) {
+                throw new Error("Shipping address is required");
+            }
 
-      if (
-        !paymentMethod ||
-        !shippingCost ||
-        !tax ||
-        !totalPrice ||
-        !itemsPrice
-      ) {
-        throw new Error(
-          'Some shipping information such as payment methods, shipping fees are missing',
-        )
-      }
+            if (
+                !paymentMethod ||
+                !shippingCost ||
+                !tax ||
+                !totalPrice ||
+                !itemsPrice
+            ) {
+                throw new Error(
+                    "Some shipping information such as payment methods, shipping fees are missing"
+                );
+            }
 
-      const order = new Order(cart)
+            const order = new Order(cart);
 
-      const createdOrder = await Order.create(order)
+            const createdOrder = await Order.create(order);
 
-      const foundUser = await User.findById(user.userId)
-      // Add the order to user
-      foundUser.orders = foundUser.orders.concat(createdOrder._id)
-      // Remove CartItems
-      foundUser.cart = []
-      await foundUser.save()
+            const foundUser = await User.findById(user.userId);
+            // Add the order to user
+            foundUser.orders = foundUser.orders.concat(createdOrder._id);
+            // Remove CartItems
+            foundUser.cart = [];
+            await foundUser.save();
 
-      // send the created orders
-      res.status(201).send(createdOrder)
-    } catch (error) {
-      res.status(400).send({ message: error.message })
-    }
-  },
-  async getOrder(req, res) {
-    const orderId = req.params.id
-    try {
-      const order = await Order.findById(orderId)
-      res.send(order)
-    } catch (error) {
-      res.status(404).send({ message: error.message })
-    }
-  },
+            // send the created orders
+            res.status(201).send(createdOrder);
+        } catch (error) {
+            res.status(400).send({ message: error.message });
+        }
+    },
+    async getOrder(req, res) {
+        const orderId = req.params.id;
+        try {
+            const order = await Order.findById(orderId);
+            res.send(order);
+        } catch (error) {
+            res.status(404).send({ message: error.message });
+        }
+    },
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -382,18 +388,29 @@ module.exports = {
     },
 =======
 >>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
+=======
+    async deleteOrder(req, res) {
+        const orderId = req.params.id;
+        try {
+            const order = await Order.findById(orderId);
+>>>>>>> d421cc7 (added search functionalities for admin actions)
 
-      const user = await User.findById(order.user.userId)
+            const user = await User.findById(order.user.userId);
 
-      const orders = user.orders.filter((item) => item.toString() !== orderId)
+            const orders = user.orders.filter(
+                (item) => item.toString() !== orderId
+            );
 
-      user.orders = orders
-      await user.save()
+            user.orders = orders;
+            await user.save();
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             user.orders = orders;
             await user.save();
 
+=======
+>>>>>>> d421cc7 (added search functionalities for admin actions)
             await order.remove();
             res.status(200).send("Successfully deleted order");
         } catch (error) {
@@ -401,12 +418,39 @@ module.exports = {
         }
     },
     async getAllOrders(req, res) {
+<<<<<<< HEAD
         try {
             const orders = await Order.find({})
                 .populate("user", "id name")
                 .sort({ createdAt: -1 })
                 .limit(12);
             res.status(200).send(orders);
+=======
+        const pageSize = 10;
+        const page = Number(req.query.pageNumber) || 1;
+
+        const searchArray = [
+            { paymentMethod: { $regex: req.query.keyword, $options: "i" } },
+            { "user.name": { $regex: req.query.keyword, $options: "i" } },
+            { "user.surname": { $regex: req.query.keyword, $options: "i" } },
+        ];
+
+        //const orderId = req.query.orderId;
+
+        try {
+            const count = await Order.countDocuments({ $or: searchArray });
+            const orders = await Order.find({ $or: searchArray })
+                .populate("user", "id name")
+                .limit(pageSize)
+                .skip(pageSize * (page - 1))
+                .sort({ createdAt: -1 });
+
+            res.status(200).send({
+                orders,
+                page,
+                pages: Math.ceil(count / pageSize),
+            });
+>>>>>>> d421cc7 (added search functionalities for admin actions)
         } catch (error) {
             res.status(404).send({ message: error.message });
         }
@@ -429,6 +473,7 @@ module.exports = {
         }
     },
 };
+<<<<<<< HEAD
 >>>>>>> 83e089f (added order list for admin, refactored search component and header  and added reducers, need to finish the filter function)
 =======
       await order.remove()
@@ -467,3 +512,5 @@ module.exports = {
   },
 }
 >>>>>>> 1645bc1 (change imageUrl to publicId for cloudinary images and fix the edit product middleware)
+=======
+>>>>>>> d421cc7 (added search functionalities for admin actions)
