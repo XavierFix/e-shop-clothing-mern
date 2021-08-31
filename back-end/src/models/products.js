@@ -82,6 +82,7 @@ const productSchema = new mongoose.Schema({
 >>>>>>> ab0aa75 (latest progress)
     },
 
+<<<<<<< HEAD
     image: [
         {
             type: String,
@@ -104,6 +105,20 @@ const productSchema = new mongoose.Schema({
         cn: helper.styleObject,
         jpn: helper.styleObject,
     },
+=======
+  // allColors: [
+  //   {
+  //     type: String,
+  //   },
+  // ],
+
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    required: true,
+  },
+})
+>>>>>>> 3efbd08 (filter in the backend)
 
     price: {
         hkd: helper.priceObject,

@@ -48,7 +48,7 @@ const ProductEditScreen = ({ match, history }) => {
 
 <<<<<<< HEAD
   const langInit = { en: '', cn: '', jpn: '' }
-  const currencyInit = { hkd: '', jpn: '' }
+  const currencyInit = { hkd: 0, jpn: 0 }
   const colorInit = { colorHex: '', color: langInit, count: 0 }
 
   const [nameObj, setNameObj] = useState(langInit)
@@ -449,7 +449,10 @@ const ProductEditScreen = ({ match, history }) => {
                       placeholder={item.placeholder}
                       value={priceObj[item.key]}
                       onChange={(e) =>
-                        setPriceObj({ ...priceObj, [item.key]: e.target.value })
+                        setPriceObj({
+                          ...priceObj,
+                          [item.key]: e.target.value,
+                        })
                       }
                     />
                   </InputGroup>
@@ -684,7 +687,10 @@ const ProductEditScreen = ({ match, history }) => {
                     placeholder={item.placeholder}
                     value={discount[item.key]}
                     onChange={(e) =>
-                      setDiscount({ ...discount, [item.key]: e.target.value })
+                      setDiscount({
+                        ...discount,
+                        [item.key]: e.target.value,
+                      })
                     }
                   />
                 </InputGroup>
