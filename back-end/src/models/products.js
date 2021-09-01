@@ -83,6 +83,7 @@ const productSchema = new mongoose.Schema({
     },
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     image: [
         {
             type: String,
@@ -111,6 +112,9 @@ const productSchema = new mongoose.Schema({
   //     type: String,
   //   },
   // ],
+=======
+  colors: [{ type: String }],
+>>>>>>> 849d31e (added filter for new-arrivals, colors, price, category for men)
 
   createdAt: {
     type: Date,
