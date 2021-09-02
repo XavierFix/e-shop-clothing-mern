@@ -169,6 +169,8 @@ const ProductEditScreen = ({ match, history }) => {
 
     const base64Image = uploadImage(newImages)
 
+    console.log(discount)
+
     const productObj = productObject(
       nameObj,
       categoryObj,
