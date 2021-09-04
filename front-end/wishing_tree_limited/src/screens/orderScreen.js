@@ -367,7 +367,11 @@ const OrderScreen = ({ history, match }) => {
                     },
                     unit_amount:
                         currency === "hkd"
-                            ? item.price * 100
+                            ? item.discount
+                                ? item.discount * 100
+                                : item.price * 100
+                            : item.discount
+                            ? item.discount * 100
                             : item.price * 1000,
                 },
                 quantity: item.qty,
@@ -459,6 +463,7 @@ const OrderScreen = ({ history, match }) => {
                             ) : (
                                 <ListGroup variant="flush">
                                     {order.orderItems.map((item, index) => {
+                                        console.log(item);
                                         return (
                                             <ListGroup.Item key={index}>
                                                 <Row>
@@ -470,8 +475,6 @@ const OrderScreen = ({ history, match }) => {
                                                                 item.image[0]
                                                             }
                                                             alt={item.name}
-                                                            fluid
-                                                            rounded
                                                         />
                                                     </Col>
                                                     <Col md={2}>
@@ -489,14 +492,24 @@ const OrderScreen = ({ history, match }) => {
                                                         Color: {item.color}
                                                     </Col>
                                                     <Col md={2}>
-                                                        Price: ${item.price}
+                                                        Price: $
+                                                        {item.discount > 0
+                                                            ? item.discount
+                                                            : item.price}
                                                     </Col>
                                                     <Col md={1}>
                                                         x{item.qty}
                                                     </Col>
                                                     <Col md={2}>
-                                                        = $
-                                                        {item.price * item.qty}
+                                                        ={" "}
+                                                        {currency === "hkd"
+                                                            ? "$"
+                                                            : " ¥"}
+                                                        {item.discount > 0
+                                                            ? item.discount *
+                                                              item.qty
+                                                            : item.price *
+                                                              item.qty}
                                                     </Col>
                                                 </Row>
                                             </ListGroup.Item>
